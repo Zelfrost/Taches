@@ -55,15 +55,21 @@ class Client
 		return sc.nextLine();
 	}
 	
+	/**
+	 *	Envoi le message au serveur.
+	 *	Ce message est constitué de la demande sur la première ligne.
+	 *	Si des informations secondaires sont nécessaires, elles sont envoyées à raison d'une par ligne,
+	 *	après avoir été demandé à l'utilisateur.
+	 */
 	public String envoyer(String message)
 	{
 	    envoi.println(message);
 
 		Scanner sc = new Scanner(System.in);
-		if(message.equals("Ajouter")) {
-
+		if(message.equals("ListerUtilisateur"))
 			envoi.println(nom);
-			System.out.println(nom);
+		else if(message.equals("Ajouter")) {
+			envoi.println(nom);
 
 			System.out.println("Quel est le nom de la tache ?");
 			envoi.println( sc.nextLine() );
@@ -97,6 +103,7 @@ class Client
 	    return null;
 	}
 
+	// Envoi la phrase STOP au serveur, pour indiquer que le client se déconnecte
 	public void fermer()
 	{
 		envoi.println("STOP");

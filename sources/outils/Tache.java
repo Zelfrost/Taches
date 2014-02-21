@@ -36,7 +36,7 @@ public class Tache implements Comparable<Tache>
 		return statut;
 	}
 
-	public String affecteA()
+	public String affecteeA()
 	{
 		return affecteA;
 	}
@@ -57,6 +57,9 @@ public class Tache implements Comparable<Tache>
 
 
 
+	/**
+	 *	Pour le tri alphabetique
+	 */
 	public int compareTo(Tache t)
 	{
 		return libelle.compareTo(t.libelle());

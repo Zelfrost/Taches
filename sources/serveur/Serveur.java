@@ -54,6 +54,10 @@ class Serveur
 		}
 	}
 	
+	/**
+	 *	Cette méthode récupère la demande et renvoi vers les fonctions de traitement secondaires,
+	 *	qui récupèreront elles-mêmes les données dont elles ont besoin.
+	 */
 	private void realiseService(Socket unClient) {
 		PrintWriter envoi = null;
 		BufferedReader reception = null;
@@ -72,7 +76,13 @@ class Serveur
 				if(demande.equals("Lister")) {
 					envoi.println( lister() );
 				} else if( demande.equals("ListerUtilisateur")) {
-					envoi.priontln( listerUtilisateur() );
+					envoi.println( listerUtilisateur(reception) );
+				} else if( demande.equals("ListerNA")) {
+					envoi.println( listerNA() );
+				} else if( demande.equals("ListerA")) {
+					envoi.println( listerA() );
+				} else if( demande.equals("ListerT")) {
+					envoi.println( listerT() );
 				} else if( demande.equals("Ajouter") ) {
 					envoi.println( 	
 						((ajouter(reception))
@@ -106,6 +116,9 @@ class Serveur
 		}
 	}
 
+	/**
+	 *	Pas de données secondaires, liste les tâches
+	 */
 	private String lister()
 	{
 		String res = "";
@@ -124,7 +137,10 @@ class Serveur
 		return res;
 	}
 
-	private String listerUtilisateur()
+	/**
+	 * Récupère le nom de l'utilisateur, affiche les tâches qui lui sont affectées
+	 */
+	private String listerUtilisateur(BufferedReader reception)
 	{
 		String res = "";
 		String utilisateur;
@@ -135,20 +151,97 @@ class Serveur
 		}
 
 		for(int i=0; i<taches.size(); i++) {
-			res += i + ": \n";
-			res += taches.get(i).toString() + "\n";
-			res += "\n====================\n\n";
+			if(taches.get(i).affecteeA() != null && taches.get(i).affecteeA().equals(utilisateur)) {
+				res += i + ": \n";
+				res += taches.get(i).toString() + "\n";
+				res += "\n====================\n\n";
+			}
 		}
 		if(res.length() > 0)
 			res = "\n" + res.substring(0, res.length() - 22);
 		else
-			res = "Aucune tâche pour le moment.\n";
+			res = "Aucune tâche à votre nom pour le moment.\n";
 
 		res += "STOP";
 
 		return res;
 	}
 
+	/**
+	 * Pas de données secondaires, liste les tâches non affectées
+	 */
+	private String listerNA()
+	{
+		String res = "";
+
+		for(int i=0; i<taches.size(); i++) {
+			if(taches.get(i).affecteeA() != null) {
+				res += i + ": \n";
+				res += taches.get(i).toString() + "\n";
+				res += "\n====================\n\n";
+			}
+		}
+		if(res.length() > 0)
+			res = "\n" + res.substring(0, res.length() - 22);
+		else
+			res = "Aucune tâche libre pour le moment.\n";
+
+		res += "STOP";
+
+		return res;
+	}
+
+	/**
+	 * Pas de données secondaires, liste les tâches affectées
+	 */
+	private String listerA()
+	{
+		String res = "";
+
+		for(int i=0; i<taches.size(); i++) {
+			if(taches.get(i).affecteeA() == null) {
+				res += i + ": \n";
+				res += taches.get(i).toString() + "\n";
+				res += "\n====================\n\n";
+			}
+		}
+		if(res.length() > 0)
+			res = "\n" + res.substring(0, res.length() - 22);
+		else
+			res = "Aucune tâche affectée pour le moment.\n";
+
+		res += "STOP";
+
+		return res;
+	}
+
+	/**
+	 * Pas de données secondaires, liste les tâches terminées
+	 */
+	private String listerT()
+	{
+		String res = "";
+
+		for(int i=0; i<taches.size(); i++) {
+			if(taches.get(i).statut().equals("Réalisée")) {
+				res += i + ": \n";
+				res += taches.get(i).toString() + "\n";
+				res += "\n====================\n\n";
+			}
+		}
+		if(res.length() > 0)
+			res = "\n" + res.substring(0, res.length() - 22);
+		else
+			res = "Aucune tâche terminée pour le moment.\n";
+
+		res += "STOP";
+
+		return res;
+	}
+
+	/**
+	 * Récupère le nom de l'utilisateur et un libellé de tâche. Crée la tâche associée
+	 */
 	private boolean ajouter(BufferedReader reception)
 	{
 		String libelle, auteur;
@@ -171,6 +264,9 @@ class Serveur
 		}
 	}
 
+	/**
+	 * Récupère un id de tâche et un nom d'utilisateur. Affecte la tâche à l'utilisateur
+	 */
 	private boolean affecter(BufferedReader reception)
 	{
 		int id;
@@ -191,6 +287,9 @@ class Serveur
 		}
 	}
 
+	/**
+	 * Récupère un id de tâche. Met fin à la tâche
+	 */
 	private boolean terminer(BufferedReader reception)
 	{
 		int id;
@@ -209,6 +308,9 @@ class Serveur
 		}
 	}
 
+	/**
+	 * Récupère un id de tâche. Supprime la tâche
+	 */
 	private boolean supprimer(BufferedReader reception)
 	{
 		int id;
